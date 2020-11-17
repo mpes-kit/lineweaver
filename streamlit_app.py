@@ -10,6 +10,10 @@ import pickle as pk
 import pesfit as pf
 import ast
 
+import sys
+sys.path.append("lineweaver")
+import utils as u
+
 
 LS_MODELS = ("Voigt", "Gaussian", "Doniach-Sunjic")
 LS_PARAMS = {"Gaussian":("Amplitude", "Center", "Sigma"),
@@ -106,13 +110,13 @@ with c2: # Column 2
             pos = np.argwhere([lspref in k for k in keys])
             idx = pos.item()
             cndts = inits[idx][lspref]
-            vmin = cndts.pop("min", None)
-            vmax = cndts.pop("max", None)
-            val = cndts.pop("value", None)
-            vary = cndts.pop("vary", True)
-            
             with st.beta_expander(lsstr + " " + peak_func):
                 for lsp in ls_params:
+                    lspdict = dict(cndts[lsp.lower()])
+                    vmin = u.cvfloat(lspdict.pop("min", None))
+                    vmax = u.cvfloat(lspdict.pop("max", None))
+                    val = u.cvfloat(lspdict.pop("value", None))
+                    vary = lspdict.pop("vary", True)
                     st.slider(lspref + lsp, min_value=vmin, max_value=vmax, value=None)
 
         # Update background component parameter widgets
