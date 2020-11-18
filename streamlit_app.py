@@ -9,6 +9,16 @@ import matplotlib.pyplot as plt
 import pickle as pk
 import pesfit as pf
 import ast
+from streamlit.hashing import _CodeHasher
+
+try:
+    # Before Streamlit 0.65
+    from streamlit.ReportThread import get_report_ctx
+    from streamlit.server.Server import Server
+except ModuleNotFoundError:
+    # After Streamlit 0.65
+    from streamlit.report_thread import get_report_ctx
+    from streamlit.server.server import Server
 
 import sys
 sys.path.append("lineweaver")
@@ -111,6 +121,8 @@ with c2: # Column 2
             idx = pos.item()
             cndts = inits[idx][lspref]
             with st.beta_expander(lsstr + " " + peak_func):
+                # _, cparam, _ = st.beta_columns([0.02, 0.96, 0.02])
+                # with cparam:
                 for lsp in ls_params:
                     lspdict = dict(cndts[lsp.lower()])
                     vmin = u.cvfloat(lspdict.pop("min", None))
@@ -161,6 +173,8 @@ with c3: # Column 3
 
 with c4: # Column 4
     st.header("Fitting panel")
+    st.text("Total spectrum count: 100")
+    st.slider("Current spectrum index")
     isfit = st.button("Run fit", key="fitButton")
     issave = st.button("Save fit", key="saveButton")
     isclear = st.button("Refresh", key="refreshButton")
